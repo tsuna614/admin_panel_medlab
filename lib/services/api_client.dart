@@ -1,3 +1,4 @@
+import 'package:admin_panel_medlab/data/global_data.dart';
 import 'package:dio/dio.dart';
 
 class ApiClient {
@@ -18,11 +19,14 @@ class ApiClient {
     Options? options,
   }) async {
     try {
+      final url = "${GlobalData.baseUrl}$endpoint";
+
       final response = await dio.get(
-        endpoint,
+        url,
         queryParameters: queryParameters,
         options: options,
       );
+      // print(response);
       return ApiResponse(
         data: fromJson != null ? fromJson(response.data) : response.data,
       );

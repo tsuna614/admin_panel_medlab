@@ -1,12 +1,27 @@
 import 'package:admin_panel_medlab/models/product_model.dart';
 import 'package:admin_panel_medlab/services/api_client.dart';
 
+class ProductResponse {
+  final int total;
+  final int totalPages;
+  final int currentPage;
+  final List<Product> products;
+
+  ProductResponse.fromJson(Map<String, dynamic> json)
+    : total = json['total'],
+      totalPages = json['totalPages'],
+      currentPage = json['currentPage'],
+      products = (json['products'] as List)
+          .map((p) => Product.fromJson(p))
+          .toList();
+}
+
 abstract class ProductService {
   final ApiClient apiClient;
 
   ProductService(this.apiClient);
 
-  Future<ApiResponse<List<Product>>> fetchProducts(int? page, int? limit);
+  Future<ApiResponse<ProductResponse>> fetchProducts(int? page, int? limit);
 
   Future<ApiResponse<Product>> fetchProductById(String productId);
 
@@ -21,13 +36,11 @@ class ProductServiceImpl extends ProductService {
   ProductServiceImpl(super.apiClient);
 
   @override
-  Future<ApiResponse<List<Product>>> fetchProducts(int? page, int? limit) {
-    return apiClient.get<List<Product>>(
+  Future<ApiResponse<ProductResponse>> fetchProducts(int? page, int? limit) {
+    return apiClient.get<ProductResponse>(
       endpoint: '/products',
       queryParameters: {'page': page, 'limit': limit},
-      fromJson: (data) => (data as List)
-          .map((item) => Product.fromJson(item as Map<String, dynamic>))
-          .toList(),
+      fromJson: (data) => ProductResponse.fromJson(data),
     );
   }
 
