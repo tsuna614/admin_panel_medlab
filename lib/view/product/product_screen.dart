@@ -21,6 +21,7 @@ import 'package:admin_panel_medlab/bloc/product-bloc/product_bloc.dart';
 import 'package:admin_panel_medlab/bloc/product-bloc/product_events.dart';
 import 'package:admin_panel_medlab/bloc/product-bloc/product_states.dart';
 import 'package:admin_panel_medlab/models/product_model.dart'; // Your Product model
+import 'package:admin_panel_medlab/view/product/create_edit_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -91,21 +92,23 @@ class ProductScreen extends StatelessWidget {
           return const Center(child: Text('Something went wrong.'));
         },
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // TODO: Navigate to Create Product Screen
-      //     // Navigator.of(context).push(MaterialPageRoute(builder: (_) => CreateEditProductScreen()));
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       const SnackBar(
-      //         content: Text(
-      //           'Navigate to Create Product Screen (Not Implemented)',
-      //         ),
-      //       ),
-      //     );
-      //   },
-      //   tooltip: 'Add Product',
-      //   child: const Icon(Icons.add),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Navigate to Create Product Screen
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => CreateEditProductScreen()));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Navigate to Create Product Screen (Not Implemented)',
+              ),
+            ),
+          );
+        },
+        tooltip: 'Add Product',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
@@ -303,13 +306,14 @@ class ProductDataSource extends DataTableSource {
                   icon: const Icon(Icons.edit, color: Colors.orange),
                   onPressed: () {
                     // TODO: Navigate to Edit Product Screen, pass product
-                    // Navigator.of(context).push(MaterialPageRoute(builder: (_) => CreateEditProductScreen(product: product)));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Edit: ${product.name} (Not Implemented)',
-                        ),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            CreateEditProductScreen(productToEdit: product),
                       ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Editing: ${product.name}')),
                     );
                   },
                 ),
