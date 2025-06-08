@@ -45,7 +45,7 @@ class ProductScreen extends StatelessWidget {
                 if (context.mounted) {
                   context.read<ProductBloc>().add(
                     FetchProductsEvent(
-                      page: 0, // Start with page 0 for API
+                      page: 1,
                       limit: PaginatedDataTable.defaultRowsPerPage,
                     ),
                   );
@@ -59,15 +59,14 @@ class ProductScreen extends StatelessWidget {
                 child: Text('No products found. Click + to add one.'),
               );
             }
-            for (var product in state.products) {
-              // Ensure each product has a valid ID
-              print('Product ID: ${product.id}, Name: ${product.name}');
-            }
-            return ProductDataTable(
-              productsForCurrentPage: state.products,
-              totalAvailableProducts: state.totalProducts,
-              rowsPerPage: PaginatedDataTable.defaultRowsPerPage,
-              currentPageZeroIndexed: state.currentPage,
+            return SizedBox(
+              width: double.infinity,
+              child: ProductDataTable(
+                productsForCurrentPage: state.products,
+                totalAvailableProducts: state.totalProducts,
+                rowsPerPage: PaginatedDataTable.defaultRowsPerPage,
+                currentPageZeroIndexed: state.currentPage - 1,
+              ),
             );
           } else if (state is ProductError) {
             return Center(
@@ -79,7 +78,7 @@ class ProductScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () => context.read<ProductBloc>().add(
                       FetchProductsEvent(
-                        page: 0,
+                        page: 1,
                         limit: PaginatedDataTable.defaultRowsPerPage,
                       ),
                     ),
@@ -205,10 +204,10 @@ class _ProductDataTableState extends State<ProductDataTable> {
           }
         },
         onPageChanged: (firstRowIndex) {
-          int newPage = (firstRowIndex / widget.rowsPerPage).floor();
-          // Only dispatch if the calculated page is truly different than what BLoC has
-          // This prevents redundant fetches if PaginatedDataTable calls onPageChanged for the current page
-          if (newPage != widget.currentPageZeroIndexed) {
+          int newPage =
+              (firstRowIndex / widget.rowsPerPage).floor() +
+              1; // add 1 to convert to 1-indexed page number in the backend
+          if (newPage != widget.currentPageZeroIndexed + 1) {
             productBloc.add(
               FetchProductsEvent(page: newPage, limit: widget.rowsPerPage),
             );
@@ -221,6 +220,11 @@ class _ProductDataTableState extends State<ProductDataTable> {
             label: const Text('Name'),
             onSort: (columnIndex, ascending) =>
                 _sort<String>((p) => p.name, columnIndex, ascending),
+          ),
+          DataColumn(
+            label: const Text('Brand'),
+            onSort: (columnIndex, ascending) =>
+                _sort<String>((p) => p.brand ?? "", columnIndex, ascending),
           ),
           DataColumn(
             label: const Text('Price'),
@@ -253,7 +257,6 @@ class ProductDataSource extends DataTableSource {
   }) : _productsCurrentlyDisplaying = productsCurrentlyDisplaying;
 
   void updateTotalRowCount(int total) {
-    print("Updating total row count: $total");
     if (_totalRowCount != total) {
       _totalRowCount = total;
       // No need to call notifyListeners() just for rowCount change,
@@ -264,7 +267,6 @@ class ProductDataSource extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
-    print("Getting row for index: $index");
     // PaginatedDataTable passes the overall index (0 to _totalRowCount - 1).
     // We need to determine if this 'index' falls within the range of items
     // currently held in _productsCurrentlyDisplaying, considering the current page.
@@ -273,11 +275,10 @@ class ProductDataSource extends DataTableSource {
     final currentState = productBloc.state;
     int firstRowIndexOfCurrentPage = 0;
 
-    print("PRINTING");
-
     if (currentState is ProductsLoaded) {
       firstRowIndexOfCurrentPage =
-          currentState.currentPage * PaginatedDataTable.defaultRowsPerPage;
+          (currentState.currentPage - 1) *
+          PaginatedDataTable.defaultRowsPerPage;
     }
 
     // Calculate the index relative to the current page's data
@@ -291,6 +292,7 @@ class ProductDataSource extends DataTableSource {
         index: index,
         cells: [
           DataCell(Text(product.name)),
+          DataCell(Text(product.brand ?? 'N/A')),
           DataCell(Text('\$${product.price.toStringAsFixed(2)}')),
           DataCell(Text(product.stock.toString())),
           DataCell(
