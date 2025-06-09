@@ -1,3 +1,4 @@
+import 'package:admin_panel_medlab/models/product_model.dart';
 import 'package:equatable/equatable.dart';
 // Import your Product model if needed for events like AddProduct
 
@@ -21,11 +22,29 @@ class FetchProductsEvent extends ProductEvent {
 
 class FetchNextProductPageEvent extends ProductEvent {}
 
-// Example: AddProductEvent would carry a Product object
-// class AddProductEvent extends ProductEvent {
+// Example: CreateProductEvent would carry a Product object
+// class CreateProductEvent extends ProductEvent {
 //   final Product product;
-//   const AddProductEvent(this.product);
+//   const CreateProductEvent(this.product);
 //   @override List<Object> get props => [product];
 // }
+
+class CreateProductEvent extends ProductEvent {
+  final Product product;
+
+  const CreateProductEvent({required this.product});
+
+  @override
+  List<Object?> get props => [product];
+}
+
+class DeleteProductEvent extends ProductEvent {
+  final String productId;
+
+  const DeleteProductEvent({required this.productId});
+
+  @override
+  List<Object?> get props => [productId];
+}
 
 // Add events for UpdateProduct, DeleteProduct, FetchProductById as needed

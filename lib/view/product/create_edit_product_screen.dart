@@ -1,5 +1,9 @@
+import 'package:admin_panel_medlab/bloc/product-bloc/product_bloc.dart';
+import 'package:admin_panel_medlab/bloc/product-bloc/product_events.dart';
+import 'package:admin_panel_medlab/bloc/product-bloc/product_states.dart';
 import 'package:flutter/material.dart';
-import 'package:admin_panel_medlab/models/product_model.dart'; // Assuming your Product model is here
+import 'package:admin_panel_medlab/models/product_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Assuming your Product model is here
 
 class CreateEditProductScreen extends StatefulWidget {
   final Product? productToEdit; // Null if creating, has value if editing
@@ -40,26 +44,26 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
 
     // Initialize controllers with existing product data if editing, or empty if creating
     final p = widget.productToEdit;
-    _nameController = TextEditingController(text: p?.name ?? '');
-    _brandController = TextEditingController(text: p?.brand ?? '');
-    _descriptionController = TextEditingController(text: p?.description ?? '');
-    _imageUrlController = TextEditingController(text: p?.imageUrl ?? '');
-    _dosageFormController = TextEditingController(text: p?.dosageForm ?? '');
-    _strengthController = TextEditingController(text: p?.strength ?? '');
-    _categoryController = TextEditingController(text: p?.category ?? '');
+    _nameController = TextEditingController(text: p?.name ?? '1');
+    _brandController = TextEditingController(text: p?.brand ?? '2');
+    _descriptionController = TextEditingController(text: p?.description ?? '3');
+    _imageUrlController = TextEditingController(text: p?.imageUrl ?? '4');
+    _dosageFormController = TextEditingController(text: p?.dosageForm ?? '5');
+    _strengthController = TextEditingController(text: p?.strength ?? '6');
+    _categoryController = TextEditingController(text: p?.category ?? '7');
     _ingredientsController = TextEditingController(
-      text: p?.ingredients?.join(', ') ?? '',
+      text: p?.ingredients?.join(', ') ?? '8',
     ); // Join list to string
-    _priceController = TextEditingController(text: p?.price.toString() ?? '');
-    _stockController = TextEditingController(text: p?.stock.toString() ?? '');
+    _priceController = TextEditingController(text: p?.price.toString() ?? '9');
+    _stockController = TextEditingController(text: p?.stock.toString() ?? '10');
     _manufacturerController = TextEditingController(
-      text: p?.manufacturer ?? '',
+      text: p?.manufacturer ?? '11',
     );
     _expiryDateController = TextEditingController(
       text: p?.expiryDate ?? '',
     ); // Could use a DatePicker later
     _instructionsController = TextEditingController(
-      text: p?.instructions ?? '',
+      text: p?.instructions ?? '12',
     );
     _prescriptionRequired = p?.prescriptionRequired ?? false;
   }
@@ -83,7 +87,7 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
     super.dispose();
   }
 
-  void _saveProduct() {
+  void _saveProduct() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // Triggers onSaved for FormFields if used
 
@@ -143,28 +147,59 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
       print('Saving Product: ${productData.name}');
       print('Is Editing: $isEditing');
       // In a real app:
-      // if (isEditing) {
-      //   context.read<ProductBloc>().add(UpdateProductEvent(productData));
-      // } else {
-      //   context.read<ProductBloc>().add(CreateProductEvent(productData)); // Might not need ID here
-      // }
+      if (isEditing) {
+        // context.read<ProductBloc>().add(UpdateProductEvent(productData));
+      } else {
+        context.read<ProductBloc>().add(
+          CreateProductEvent(product: productData),
+        ); // Might not need ID here
+      }
 
-      // Simulate save and pop
-      Future.delayed(const Duration(seconds: 1), () {
-        setState(() {
-          _isLoading = false;
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Product ${isEditing ? "updated" : "created"} successfully (simulated)!',
-              ),
-            ),
+      final result = await BlocProvider.of<ProductBloc>(context).stream
+          .firstWhere(
+            (state) => state is ProductsLoaded || state is ProductError,
           );
-          Navigator.of(context).pop(); // Go back after "saving"
-        }
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false; // Hide loading indicator
       });
+
+      if (result is ProductError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${result.message}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (result is ProductsLoaded) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Product ${isEditing ? "updated" : "created"} successfully!',
+            ),
+          ),
+        );
+        Navigator.of(context).pop(); // Go back after saving
+      }
+
+      // // Simulate save and pop
+      // Future.delayed(const Duration(seconds: 1), () {
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      //   if (mounted) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(
+      //           'Product ${isEditing ? "updated" : "created"} successfully (simulated)!',
+      //         ),
+      //       ),
+      //     );
+      //     Navigator.of(context).pop(); // Go back after "saving"
+      //   }
+      // });
     }
   }
 
@@ -275,10 +310,12 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
                   decimal: true,
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter a price';
-                  if (double.tryParse(value) == null)
+                  }
+                  if (double.tryParse(value) == null) {
                     return 'Please enter a valid number';
+                  }
                   return null;
                 },
               ),
@@ -288,10 +325,12 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
                 icon: Icons.inventory_2,
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter stock quantity';
-                  if (int.tryParse(value) == null)
+                  }
+                  if (int.tryParse(value) == null) {
                     return 'Please enter a valid integer';
+                  }
                   return null;
                 },
               ),
@@ -336,9 +375,14 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(
                     double.infinity,
-                    50,
+                    60,
                   ), // Make button wide
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  foregroundColor: Colors.white,
                 ),
                 child: _isLoading
                     ? const SizedBox(

@@ -12,6 +12,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<FetchProductsEvent>(_onFetchProducts);
     // on<FetchNextProductPageEvent>(_onFetchNextProductPage);
     // Register handlers for Add, Update, Delete events here
+    on<CreateProductEvent>(_onAddProduct);
+    on<DeleteProductEvent>(_onDeleteProduct);
   }
 
   Future<void> _onFetchProducts(
@@ -24,7 +26,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       event.limit ?? itemsPerPage,
     );
 
-    if (response.data != null) {
+    if (response.statusCode == 200 && response.data != null) {
       final productResponse = response.data!;
 
       emit(
@@ -40,6 +42,52 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           response.errorMessage ?? "Unknown error fetching products.",
         ),
       );
+    }
+  }
+
+  Future<void> _onAddProduct(
+    CreateProductEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    // final response = await productService.createProduct(event.product);
+    // if (response.statusCode == 200 && response.data != null) {
+    //   emit(ProductOperationSuccess("Product added successfully."));
+    //   // Optionally, you can trigger a fetch to refresh the product list
+    //   add(FetchProductsEvent());
+    // } else {
+    //   emit(ProductError(response.errorMessage ?? "Error adding product."));
+    // }
+
+    if (state is ProductsLoaded) {
+      final currentState = state as ProductsLoaded;
+      emit(ProductLoading());
+      final response = await productService.createProduct(event.product);
+      if (response.statusCode == 200) {
+        add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
+      } else {
+        emit(ProductError(response.errorMessage ?? "Error adding product."));
+      }
+    } else {
+      emit(ProductError("Cannot add product, products not loaded."));
+    }
+  }
+
+  Future<void> _onDeleteProduct(
+    DeleteProductEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    if (state is ProductsLoaded) {
+      final currentState = state as ProductsLoaded;
+      final response = await productService.deleteProduct(event.productId);
+      if (response.statusCode == 200) {
+        emit(ProductOperationSuccess("Product deleted successfully."));
+        // Optionally, you can trigger a fetch to refresh the product list
+        add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
+      } else {
+        emit(ProductError(response.errorMessage ?? "Error deleting product."));
+      }
+    } else {
+      emit(ProductError("Cannot delete product, products not loaded."));
     }
   }
 

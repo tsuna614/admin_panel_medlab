@@ -1,32 +1,10 @@
-// import 'package:flutter/material.dart';
-
-// class ProductScreen extends StatelessWidget {
-//   const ProductScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Product Management')),
-//       body: Center(
-//         child: Text(
-//           'Product Management Screen',
-//           style: Theme.of(context).textTheme.bodyLarge,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:admin_panel_medlab/bloc/product-bloc/product_bloc.dart';
 import 'package:admin_panel_medlab/bloc/product-bloc/product_events.dart';
 import 'package:admin_panel_medlab/bloc/product-bloc/product_states.dart';
-import 'package:admin_panel_medlab/models/product_model.dart'; // Your Product model
+import 'package:admin_panel_medlab/models/product_model.dart';
 import 'package:admin_panel_medlab/view/product/create_edit_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-// Assuming your Product, ProductBloc, ProductEvent, ProductState are defined
-// and ProductBloc is provided higher up in the widget tree.
 
 class ProductScreen extends StatelessWidget {
   const ProductScreen({super.key});
@@ -60,14 +38,36 @@ class ProductScreen extends StatelessWidget {
                 child: Text('No products found. Click + to add one.'),
               );
             }
-            return SizedBox(
-              width: double.infinity,
-              child: ProductDataTable(
-                productsForCurrentPage: state.products,
-                totalAvailableProducts: state.totalProducts,
-                rowsPerPage: PaginatedDataTable.defaultRowsPerPage,
-                currentPageZeroIndexed: state.currentPage - 1,
-              ),
+            return Stack(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ProductDataTable(
+                    productsForCurrentPage: state.products,
+                    totalAvailableProducts: state.totalProducts,
+                    rowsPerPage: PaginatedDataTable.defaultRowsPerPage,
+                    currentPageZeroIndexed: state.currentPage - 1,
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => CreateEditProductScreen(),
+                        ),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.blue),
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                    ),
+                    child: const Text('Add Product'),
+                  ),
+                ),
+              ],
             );
           } else if (state is ProductError) {
             return Center(
@@ -91,23 +91,6 @@ class ProductScreen extends StatelessWidget {
           }
           return const Center(child: Text('Something went wrong.'));
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Navigate to Create Product Screen
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => CreateEditProductScreen()));
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Navigate to Create Product Screen (Not Implemented)',
-              ),
-            ),
-          );
-        },
-        tooltip: 'Add Product',
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -340,12 +323,12 @@ class ProductDataSource extends DataTableSource {
                                 style: TextStyle(color: Colors.red),
                               ),
                               onPressed: () {
-                                // TODO: context.read<ProductBloc>().add(DeleteProductEvent(product.id));
+                                context.read<ProductBloc>().add(
+                                  DeleteProductEvent(productId: product.id),
+                                );
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(
-                                      'Delete: ${product.name} (Not Implemented)',
-                                    ),
+                                    content: Text('Delete: ${product.name}'),
                                   ),
                                 );
                                 Navigator.of(dialogContext).pop();

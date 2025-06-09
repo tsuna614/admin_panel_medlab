@@ -29,6 +29,7 @@ class ApiClient {
       // print(response);
       return ApiResponse(
         data: fromJson != null ? fromJson(response.data) : response.data,
+        statusCode: response.statusCode,
       );
     } on DioException catch (e) {
       return ApiResponse(
@@ -46,9 +47,12 @@ class ApiClient {
     Options? options,
   }) async {
     try {
-      final response = await dio.post(endpoint, data: data, options: options);
+      final url = "${GlobalData.baseUrl}$endpoint";
+
+      final response = await dio.post(url, data: data, options: options);
       return ApiResponse(
         data: fromJson != null ? fromJson(response.data) : response.data,
+        statusCode: response.statusCode,
       );
     } on DioException catch (e) {
       final errorMessage = e.response?.data['message'] ?? e.message;
@@ -66,9 +70,12 @@ class ApiClient {
     Options? options,
   }) async {
     try {
-      final response = await dio.put(endpoint, data: data, options: options);
+      final url = "${GlobalData.baseUrl}$endpoint";
+
+      final response = await dio.put(url, data: data, options: options);
       return ApiResponse(
         data: fromJson != null ? fromJson(response.data) : response.data,
+        statusCode: response.statusCode,
       );
     } on DioException catch (e) {
       return ApiResponse(
@@ -84,9 +91,12 @@ class ApiClient {
     Options? options,
   }) async {
     try {
-      final response = await dio.delete(endpoint, options: options);
+      final url = "${GlobalData.baseUrl}$endpoint";
+
+      final response = await dio.delete(url, options: options);
       return ApiResponse(
         data: fromJson != null ? fromJson(response.data) : response.data,
+        statusCode: response.statusCode,
       );
     } on DioException catch (e) {
       return ApiResponse(
