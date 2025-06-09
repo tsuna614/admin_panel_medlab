@@ -10,8 +10,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   ProductBloc({required this.productService}) : super(ProductInitial()) {
     on<FetchProductsEvent>(_onFetchProducts);
-    // on<FetchNextProductPageEvent>(_onFetchNextProductPage);
-    // Register handlers for Add, Update, Delete events here
     on<CreateProductEvent>(_onAddProduct);
     on<UpdateProductEvent>(_onUpdateProduct);
     on<DeleteProductEvent>(_onDeleteProduct);
@@ -64,7 +62,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(ProductLoading());
       final response = await productService.createProduct(event.product);
       if (response.statusCode == 200) {
-        add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
+        add(
+          FetchProductsEvent(
+            page: currentState.currentPage,
+            limit: itemsPerPage,
+          ),
+        );
       } else {
         emit(ProductError(response.errorMessage ?? "Error adding product."));
       }
@@ -83,7 +86,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final response = await productService.updateProduct(event.product);
       if (response.statusCode == 200) {
         emit(ProductOperationSuccess("Product updated successfully."));
-        add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
+        add(
+          FetchProductsEvent(
+            page: currentState.currentPage,
+            limit: itemsPerPage,
+          ),
+        );
       } else {
         emit(ProductError(response.errorMessage ?? "Error updating product."));
       }
@@ -101,7 +109,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final response = await productService.deleteProduct(event.productId);
       if (response.statusCode == 200) {
         emit(ProductOperationSuccess("Product deleted successfully."));
-        add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
+        add(
+          FetchProductsEvent(
+            page: currentState.currentPage,
+            limit: itemsPerPage,
+          ),
+        );
       } else {
         emit(ProductError(response.errorMessage ?? "Error deleting product."));
       }

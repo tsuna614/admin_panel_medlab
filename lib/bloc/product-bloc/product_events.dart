@@ -20,8 +20,6 @@ class FetchProductsEvent extends ProductEvent {
   List<Object?> get props => [page, limit];
 }
 
-class FetchNextProductPageEvent extends ProductEvent {}
-
 // Example: CreateProductEvent would carry a Product object
 // class CreateProductEvent extends ProductEvent {
 //   final Product product;
