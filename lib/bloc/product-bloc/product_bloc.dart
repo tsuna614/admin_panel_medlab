@@ -13,6 +13,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     // on<FetchNextProductPageEvent>(_onFetchNextProductPage);
     // Register handlers for Add, Update, Delete events here
     on<CreateProductEvent>(_onAddProduct);
+    on<UpdateProductEvent>(_onUpdateProduct);
     on<DeleteProductEvent>(_onDeleteProduct);
   }
 
@@ -72,6 +73,25 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
   }
 
+  Future<void> _onUpdateProduct(
+    UpdateProductEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    if (state is ProductsLoaded) {
+      final currentState = state as ProductsLoaded;
+      emit(ProductLoading());
+      final response = await productService.updateProduct(event.product);
+      if (response.statusCode == 200) {
+        emit(ProductOperationSuccess("Product updated successfully."));
+        add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
+      } else {
+        emit(ProductError(response.errorMessage ?? "Error updating product."));
+      }
+    } else {
+      emit(ProductError("Cannot update product, products not loaded."));
+    }
+  }
+
   Future<void> _onDeleteProduct(
     DeleteProductEvent event,
     Emitter<ProductState> emit,
@@ -81,7 +101,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final response = await productService.deleteProduct(event.productId);
       if (response.statusCode == 200) {
         emit(ProductOperationSuccess("Product deleted successfully."));
-        // Optionally, you can trigger a fetch to refresh the product list
         add(FetchProductsEvent(page: currentState.currentPage, limit: 10));
       } else {
         emit(ProductError(response.errorMessage ?? "Error deleting product."));

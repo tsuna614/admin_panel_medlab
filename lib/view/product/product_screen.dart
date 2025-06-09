@@ -288,15 +288,11 @@ class ProductDataSource extends DataTableSource {
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.orange),
                   onPressed: () {
-                    // TODO: Navigate to Edit Product Screen, pass product
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) =>
                             CreateEditProductScreen(productToEdit: product),
                       ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Editing: ${product.name}')),
                     );
                   },
                 ),

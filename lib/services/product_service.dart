@@ -30,7 +30,7 @@ abstract class ProductService {
 
   Future<ApiResponse<void>> createProduct(Product product);
 
-  Future<ApiResponse<Product>> updateProduct(Product product);
+  Future<ApiResponse<void>> updateProduct(Product product);
 
   Future<ApiResponse<void>> deleteProduct(String productId);
 }
@@ -64,11 +64,10 @@ class ProductServiceImpl extends ProductService {
   }
 
   @override
-  Future<ApiResponse<Product>> updateProduct(Product product) {
-    return apiClient.put<Product>(
+  Future<ApiResponse<void>> updateProduct(Product product) {
+    return apiClient.put<void>(
       endpoint: '/products/${product.id}',
       data: product.toJson(),
-      fromJson: (data) => Product.fromJson(data),
     );
   }
 

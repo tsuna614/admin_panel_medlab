@@ -38,6 +38,15 @@ class CreateProductEvent extends ProductEvent {
   List<Object?> get props => [product];
 }
 
+class UpdateProductEvent extends ProductEvent {
+  final Product product;
+
+  const UpdateProductEvent({required this.product});
+
+  @override
+  List<Object?> get props => [product];
+}
+
 class DeleteProductEvent extends ProductEvent {
   final String productId;
 

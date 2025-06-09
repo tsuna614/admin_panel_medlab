@@ -148,7 +148,9 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
       print('Is Editing: $isEditing');
       // In a real app:
       if (isEditing) {
-        // context.read<ProductBloc>().add(UpdateProductEvent(productData));
+        context.read<ProductBloc>().add(
+          UpdateProductEvent(product: productData),
+        );
       } else {
         context.read<ProductBloc>().add(
           CreateProductEvent(product: productData),
