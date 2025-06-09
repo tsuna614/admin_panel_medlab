@@ -25,10 +25,12 @@ abstract class OrderService {
     String? statusFilter,
   );
 
-  Future<ApiResponse<Order>> changeOrderStatus({
+  Future<ApiResponse<void>> changeOrderStatus({
     required String orderId,
     required String status,
   });
+
+  Future<ApiResponse<void>> deleteOrder(String orderId);
 }
 
 class OrderServiceImpl extends OrderService {
@@ -48,14 +50,18 @@ class OrderServiceImpl extends OrderService {
   }
 
   @override
-  Future<ApiResponse<Order>> changeOrderStatus({
+  Future<ApiResponse<void>> changeOrderStatus({
     required String orderId,
     required String status,
   }) {
-    return apiClient.put<Order>(
-      endpoint: '/orders/$orderId/status',
+    return apiClient.put<void>(
+      endpoint: '/orders/updateOrderStatus/$orderId',
       data: {'status': status},
-      fromJson: (data) => Order.fromJson(data),
     );
+  }
+
+  @override
+  Future<ApiResponse<void>> deleteOrder(String orderId) {
+    return apiClient.delete<void>(endpoint: '/orders/$orderId');
   }
 }

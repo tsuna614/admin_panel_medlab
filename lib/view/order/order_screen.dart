@@ -156,9 +156,6 @@ class _OrderScreenState extends State<OrderScreen> {
                   }
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is OrdersLoaded) {
-                  if (state.orders.isEmpty && state.totalOrders == 0) {
-                    return const Center(child: Text('No orders found.'));
-                  }
                   return SizedBox(
                     width: double.infinity,
                     child: OrderDataTable(
@@ -219,7 +216,7 @@ class OrderDataTable extends StatefulWidget {
   final String? currentSortOrder;
 
   const OrderDataTable({
-    Key? key,
+    super.key,
     required this.orders,
     required this.totalOrders,
     required this.rowsPerPage,
@@ -227,7 +224,7 @@ class OrderDataTable extends StatefulWidget {
     this.currentStatusFilter,
     this.currentSortBy,
     this.currentSortOrder,
-  }) : super(key: key);
+  });
 
   @override
   State<OrderDataTable> createState() => _OrderDataTableState();
@@ -283,8 +280,9 @@ class _OrderDataTableState extends State<OrderDataTable> {
   @override
   Widget build(BuildContext context) {
     final orderBloc = BlocProvider.of<OrderBloc>(context);
-    if (_dataSource == null)
+    if (_dataSource == null) {
       return const Center(child: Text("Loading order data..."));
+    }
 
     return SingleChildScrollView(
       child: PaginatedDataTable(
@@ -350,7 +348,7 @@ class _OrderDataTableState extends State<OrderDataTable> {
 
 class OrderDataSource extends DataTableSource {
   final BuildContext context;
-  List<Order> _ordersCurrentlyDisplaying;
+  final List<Order> _ordersCurrentlyDisplaying;
   int _totalRowCount = 0;
 
   OrderDataSource({
@@ -389,7 +387,7 @@ class OrderDataSource extends DataTableSource {
             Text(order.createdAt.substring(0, 10)),
           ), // Basic date formatting
           DataCell(
-            Text(order.userId.substring(0, 8) + "..."),
+            Text("${order.userId.substring(0, 8)}..."),
           ), // Show part of User ID
           DataCell(Text('\$${order.items.length.toStringAsFixed(2)}')),
           // DataCell(Text(order.status.toString())),
@@ -413,14 +411,13 @@ class OrderDataSource extends DataTableSource {
                   }).toList(),
               onChanged: (String? newStatus) {
                 if (newStatus != null && newStatus != order.status) {
-                  // TODO
-                  // // Dispatch event to BLoC to update status
-                  // context.read<OrderBloc>().add(
-                  //   UpdateOrderStatusEvent(
-                  //     orderId: order.id,
-                  //     newStatus: newStatus,
-                  //   ),
-                  // );
+                  // Dispatch event to BLoC to update status
+                  context.read<OrderBloc>().add(
+                    ChangeOrderStatusEvent(
+                      orderId: order.id,
+                      status: newStatus,
+                    ),
+                  );
                 }
               },
             ),
@@ -437,7 +434,7 @@ class OrderDataSource extends DataTableSource {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'View Order: ${order.id} (Not Implemented)', // TODO
+                          'View Order: ${order.id} (Not Implemented)',
                         ),
                       ),
                     );
@@ -465,10 +462,10 @@ class OrderDataSource extends DataTableSource {
                               style: TextStyle(color: Colors.red),
                             ),
                             onPressed: () {
-                              // context.read<OrderBloc>().add(
-                              //   DeleteOrderEvent(orderId: order.id),
-                              // );
-                              // Navigator.of(dialogContext).pop();
+                              context.read<OrderBloc>().add(
+                                DeleteOrderEvent(orderId: order.id),
+                              );
+                              Navigator.of(dialogContext).pop();
                             },
                           ),
                         ],

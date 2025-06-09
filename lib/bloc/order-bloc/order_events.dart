@@ -21,3 +21,22 @@ class FetchOrdersEvent extends OrderEvents {
   @override
   List<Object?> get props => [page, limit, statusFilter];
 }
+
+class ChangeOrderStatusEvent extends OrderEvents {
+  final String orderId;
+  final String status;
+
+  const ChangeOrderStatusEvent({required this.orderId, required this.status});
+
+  @override
+  List<Object?> get props => [orderId, status];
+}
+
+class DeleteOrderEvent extends OrderEvents {
+  final String orderId;
+
+  const DeleteOrderEvent({required this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}

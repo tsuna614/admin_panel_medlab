@@ -58,7 +58,7 @@ class OrdersLoaded extends OrderState {
 class OrderUpdateSuccess extends OrderState {
   final String message;
 
-  const OrderUpdateSuccess(this.message);
+  const OrderUpdateSuccess({required this.message});
 
   @override
   List<Object> get props => [message];
@@ -67,7 +67,7 @@ class OrderUpdateSuccess extends OrderState {
 class OrderDeleteSuccess extends OrderState {
   final String message;
 
-  const OrderDeleteSuccess(this.message);
+  const OrderDeleteSuccess({required this.message});
 
   @override
   List<Object> get props => [message];
