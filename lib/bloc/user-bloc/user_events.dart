@@ -1,17 +1,19 @@
-import 'package:admin_panel_medlab/models/user_model.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class UserEvents {}
+abstract class UserEvents extends Equatable {
+  const UserEvents();
 
-class SignIn extends UserEvents {
-  final String email;
-  final String password;
-
-  SignIn({required this.email, required this.password});
+  @override
+  List<Object?> get props => [];
 }
 
-class SignUp extends UserEvents {
-  final User user;
-  final String password;
+class FetchUsersEvent extends UserEvents {
+  final int? page;
+  final int? limit;
+  final String? searchValue;
 
-  SignUp({required this.user, required this.password});
+  const FetchUsersEvent({this.page, this.limit, this.searchValue});
+
+  @override
+  List<Object?> get props => [page, limit, searchValue];
 }

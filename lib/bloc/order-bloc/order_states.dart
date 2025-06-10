@@ -30,19 +30,19 @@ class OrdersLoaded extends OrderState {
     this.currentSortOrder,
   });
 
-  OrdersLoaded copyWith({
-    List<Order>? orders,
-    int? currentPage,
-    int? totalOrders,
-    String? currentStatusFilter,
-  }) {
-    return OrdersLoaded(
-      orders: orders ?? this.orders,
-      currentPage: currentPage ?? this.currentPage,
-      totalOrders: totalOrders ?? this.totalOrders,
-      currentStatusFilter: currentStatusFilter ?? this.currentStatusFilter,
-    );
-  }
+  // OrdersLoaded copyWith({
+  //   List<Order>? orders,
+  //   int? currentPage,
+  //   int? totalOrders,
+  //   String? currentStatusFilter,
+  // }) {
+  //   return OrdersLoaded(
+  //     orders: orders ?? this.orders,
+  //     currentPage: currentPage ?? this.currentPage,
+  //     totalOrders: totalOrders ?? this.totalOrders,
+  //     currentStatusFilter: currentStatusFilter ?? this.currentStatusFilter,
+  //   );
+  // }
 
   @override
   List<Object?> get props => [

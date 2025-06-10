@@ -34,8 +34,9 @@ extension AppOrderStatusExtension on AppOrderStatus {
 
   // Optional: For sending to API if API expects exact string from your Mongoose enum
   String? get apiValue {
-    if (this == AppOrderStatus.All)
+    if (this == AppOrderStatus.All) {
       return null; // API expects null or no param for all
+    }
     return name; // e.g. "Pending", "Processing"
   }
 }
@@ -52,13 +53,13 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     // Example of providing filters if your BLoC and Service support them
     // You'd have UI elements (Dropdowns) to set these filters and re-trigger fetch
-    AppOrderStatus _selectedStatusFilter =
+    AppOrderStatus selectedStatusFilter =
         AppOrderStatus.All; // Default to show all orders
 
     // String? currentSortBy = "createdAt"; // Default sort
     // String? currentSortOrder = "desc";
 
-    void _applyFilters() {
+    void applyFilters() {
       // When filters change, fetch page 0 with new filters
       context.read<OrderBloc>().add(
         FetchOrdersEvent(
@@ -67,7 +68,7 @@ class _OrderScreenState extends State<OrderScreen> {
               ? (context.read<OrderBloc>().state as OrdersLoaded).rowsPerPage
               : PaginatedDataTable
                     .defaultRowsPerPage, // Get current rowsPerPage
-          statusFilter: _selectedStatusFilter.apiValue,
+          statusFilter: selectedStatusFilter.apiValue,
         ),
       );
     }
@@ -88,7 +89,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   vertical: 8.0,
                 ),
               ),
-              value: _selectedStatusFilter,
+              value: selectedStatusFilter,
               icon: const Icon(Icons.arrow_drop_down_rounded),
               isExpanded: true,
               items: AppOrderStatus.values.map((AppOrderStatus status) {
@@ -101,9 +102,9 @@ class _OrderScreenState extends State<OrderScreen> {
               onChanged: (AppOrderStatus? newValue) {
                 if (newValue != null) {
                   setState(() {
-                    _selectedStatusFilter = newValue;
+                    selectedStatusFilter = newValue;
                   });
-                  _applyFilters(); // Re-fetch data with the new filter
+                  applyFilters(); // Re-fetch data with the new filter
                 }
               },
             ),
@@ -430,14 +431,7 @@ class OrderDataSource extends DataTableSource {
                   icon: const Icon(Icons.visibility, color: Colors.blue),
                   tooltip: 'View Details',
                   onPressed: () {
-                    // TODO: Navigate to Order Detail Screen
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'View Order: ${order.id} (Not Implemented)',
-                        ),
-                      ),
-                    );
+                    _showOrderDetailsDialog(context, order);
                   },
                 ),
                 IconButton(
@@ -501,4 +495,65 @@ class OrderDataSource extends DataTableSource {
     });
     notifyListeners();
   }
+}
+
+void _showOrderDetailsDialog(BuildContext context, Order order) {
+  showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        title: Text('Order Details: ${order.orderNumber}'),
+        content: SingleChildScrollView(
+          // Use SingleChildScrollView if content might overflow
+          child: ListBody(
+            // ListBody arranges children vertically
+            children: <Widget>[
+              _buildDetailRow('Order ID:', order.id),
+              _buildDetailRow('User ID:', order.userId),
+              _buildDetailRow('Created At:', order.createdAt),
+              _buildDetailRow(
+                'Total Amount:',
+                '\$${order.items.length.toStringAsFixed(2)}',
+              ),
+              _buildDetailRow('Status:', order.status.toString()),
+              const SizedBox(height: 8), // Add some spacing
+              const Text(
+                'Items:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...order.items.map(
+                (item) => _buildDetailRow(
+                  ' - ${item.productNameSnapshot} (${item.quantity})',
+                  '\$${item.priceAtPurchase.toStringAsFixed(2)}',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Close'),
+            onPressed: () {
+              Navigator.of(dialogContext).pop(); // Dismiss the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Helper to build a detail row consistently
+Widget _buildDetailRow(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(width: 8),
+        Expanded(child: Text(value)),
+      ],
+    ),
+  );
 }

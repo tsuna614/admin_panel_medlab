@@ -34,7 +34,7 @@ class User {
   final String lastName;
   final String? number;
   final String? userType;
-  final String? receiptsId;
+  final List<dynamic>? receiptsId;
   final Address? address;
 
   User({
@@ -56,7 +56,7 @@ class User {
       lastName: json['lastName'] as String,
       number: json['number'] as String?,
       userType: json['userType'] as String?,
-      receiptsId: json['receiptsId'] as String?,
+      receiptsId: json['receiptsId'] as List<dynamic>?,
       address: json['address'] != null
           ? Address.fromJson(json['address'] as Map<String, dynamic>)
           : null,
