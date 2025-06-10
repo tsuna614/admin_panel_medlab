@@ -510,6 +510,7 @@ void _showOrderDetailsDialog(BuildContext context, Order order) {
             children: <Widget>[
               _buildDetailRow('Order ID:', order.id),
               _buildDetailRow('User ID:', order.userId),
+              _buildDetailRow('User Email:', order.userEmail),
               _buildDetailRow('Created At:', order.createdAt),
               _buildDetailRow(
                 'Total Amount:',

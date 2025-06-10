@@ -70,6 +70,7 @@ class OrderItem {
 class Order {
   final String id;
   final String userId;
+  final String userEmail;
   final String orderNumber;
   final List<OrderItem> items;
   final double totalAmount;
@@ -84,6 +85,7 @@ class Order {
   Order({
     required this.id,
     required this.userId,
+    required this.userEmail,
     required this.orderNumber,
     required this.items,
     required this.totalAmount,
@@ -102,6 +104,7 @@ class Order {
       userId:
           json['userId']["_id"]
               as String, // note, this works with the get api /orders only, it doesn't work with /orders/getAllUserOrder because user is not populate there in the backend
+      userEmail: json['userId']['email'] as String,
       orderNumber: json['orderNumber'] as String,
       items: (json['items'] as List<dynamic>)
           .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
