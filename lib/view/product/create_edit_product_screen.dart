@@ -44,26 +44,26 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
 
     // Initialize controllers with existing product data if editing, or empty if creating
     final p = widget.productToEdit;
-    _nameController = TextEditingController(text: p?.name ?? '1');
-    _brandController = TextEditingController(text: p?.brand ?? '2');
-    _descriptionController = TextEditingController(text: p?.description ?? '3');
-    _imageUrlController = TextEditingController(text: p?.imageUrl ?? '4');
-    _dosageFormController = TextEditingController(text: p?.dosageForm ?? '5');
-    _strengthController = TextEditingController(text: p?.strength ?? '6');
-    _categoryController = TextEditingController(text: p?.category ?? '7');
+    _nameController = TextEditingController(text: p?.name ?? '');
+    _brandController = TextEditingController(text: p?.brand ?? '');
+    _descriptionController = TextEditingController(text: p?.description ?? '');
+    _imageUrlController = TextEditingController(text: p?.imageUrl ?? '');
+    _dosageFormController = TextEditingController(text: p?.dosageForm ?? '');
+    _strengthController = TextEditingController(text: p?.strength ?? '');
+    _categoryController = TextEditingController(text: p?.category ?? '');
     _ingredientsController = TextEditingController(
-      text: p?.ingredients?.join(', ') ?? '8',
+      text: p?.ingredients?.join(', ') ?? '',
     ); // Join list to string
-    _priceController = TextEditingController(text: p?.price.toString() ?? '9');
-    _stockController = TextEditingController(text: p?.stock.toString() ?? '10');
+    _priceController = TextEditingController(text: p?.price.toString() ?? '');
+    _stockController = TextEditingController(text: p?.stock.toString() ?? '');
     _manufacturerController = TextEditingController(
-      text: p?.manufacturer ?? '11',
+      text: p?.manufacturer ?? '',
     );
     _expiryDateController = TextEditingController(
       text: p?.expiryDate ?? '',
     ); // Could use a DatePicker later
     _instructionsController = TextEditingController(
-      text: p?.instructions ?? '12',
+      text: p?.instructions ?? '',
     );
     _prescriptionRequired = p?.prescriptionRequired ?? false;
   }
@@ -98,12 +98,9 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
       // Construct the Product object (or a DTO for API)
       // For now, just printing. Later, call BLoC event / Service method.
       final isEditing = widget.productToEdit != null;
-      final productId = isEditing
-          ? widget.productToEdit!.id
-          : UniqueKey().toString(); // Generate new ID if creating
 
       final productData = Product(
-        id: productId,
+        id: "",
         name: _nameController.text.trim(),
         brand: _brandController.text.trim().isEmpty
             ? null

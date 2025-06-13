@@ -1,3 +1,4 @@
+import 'package:admin_panel_medlab/view/doctor/doctor_screen.dart';
 import 'package:admin_panel_medlab/view/order/order_screen.dart';
 import 'package:admin_panel_medlab/view/product/product_screen.dart';
 import 'package:admin_panel_medlab/view/user/user_screen.dart';
@@ -13,7 +14,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentPageIndex = 0;
 
-  final List<Widget> _pages = [UserScreen(), ProductScreen(), OrderScreen()];
+  final List<Widget> _pages = [
+    UserScreen(),
+    ProductScreen(),
+    OrderScreen(),
+    DoctorScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +43,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
             label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.medical_services),
+            label: 'Doctors',
           ),
         ],
       ),

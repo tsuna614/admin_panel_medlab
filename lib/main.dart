@@ -1,7 +1,9 @@
+import 'package:admin_panel_medlab/bloc/doctor-bloc/doctor_bloc.dart';
 import 'package:admin_panel_medlab/bloc/order-bloc/order_bloc.dart';
 import 'package:admin_panel_medlab/bloc/product-bloc/product_bloc.dart';
 import 'package:admin_panel_medlab/bloc/user-bloc/user_bloc.dart';
 import 'package:admin_panel_medlab/services/api_client.dart';
+import 'package:admin_panel_medlab/services/doctor_service.dart';
 import 'package:admin_panel_medlab/services/order_service.dart';
 import 'package:admin_panel_medlab/services/product_service.dart';
 import 'package:admin_panel_medlab/services/user_service.dart';
@@ -20,6 +22,7 @@ void setupLocator() {
   getIt.registerLazySingleton(() => UserServiceImpl(apiClient));
   getIt.registerLazySingleton(() => ProductServiceImpl(apiClient));
   getIt.registerLazySingleton(() => OrderServiceImpl(apiClient));
+  getIt.registerLazySingleton(() => DoctorServiceImpl(apiClient));
 }
 
 void main() {
@@ -45,6 +48,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<OrderBloc>(
           create: (context) =>
               OrderBloc(orderService: getIt<OrderServiceImpl>()),
+        ),
+        BlocProvider<DoctorBloc>(
+          create: (context) =>
+              DoctorBloc(doctorService: getIt<DoctorServiceImpl>()),
         ),
       ],
       child: MaterialApp(
