@@ -100,7 +100,7 @@ class _CreateEditProductScreenState extends State<CreateEditProductScreen> {
       final isEditing = widget.productToEdit != null;
 
       final productData = Product(
-        id: "",
+        id: isEditing ? widget.productToEdit!.id : '',
         name: _nameController.text.trim(),
         brand: _brandController.text.trim().isEmpty
             ? null

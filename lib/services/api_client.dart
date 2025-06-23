@@ -72,12 +72,15 @@ class ApiClient {
     try {
       final url = "${GlobalData.baseUrl}$endpoint";
 
+      print("url: $url");
+
       final response = await dio.put(url, data: data, options: options);
       return ApiResponse(
         data: fromJson != null ? fromJson(response.data) : response.data,
         statusCode: response.statusCode,
       );
     } on DioException catch (e) {
+      print(e);
       return ApiResponse(
         errorMessage: e.message,
         statusCode: e.response?.statusCode,

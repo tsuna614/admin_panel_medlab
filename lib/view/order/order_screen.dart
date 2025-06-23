@@ -390,7 +390,7 @@ class OrderDataSource extends DataTableSource {
           DataCell(
             Text("${order.userId.substring(0, 8)}..."),
           ), // Show part of User ID
-          DataCell(Text('\$${order.items.length.toStringAsFixed(2)}')),
+          DataCell(Text('\$${order.totalAmount.toStringAsFixed(2)}')),
           // DataCell(Text(order.status.toString())),
           DataCell(
             DropdownButton<String>(
@@ -514,7 +514,7 @@ void _showOrderDetailsDialog(BuildContext context, Order order) {
               _buildDetailRow('Created At:', order.createdAt),
               _buildDetailRow(
                 'Total Amount:',
-                '\$${order.items.length.toStringAsFixed(2)}',
+                '\$${order.totalAmount.toString()}',
               ),
               _buildDetailRow('Status:', order.status.toString()),
               const SizedBox(height: 8), // Add some spacing
