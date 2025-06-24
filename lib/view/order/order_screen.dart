@@ -4,6 +4,7 @@ import 'package:admin_panel_medlab/bloc/order-bloc/order_bloc.dart';
 import 'package:admin_panel_medlab/bloc/order-bloc/order_events.dart';
 import 'package:admin_panel_medlab/bloc/order-bloc/order_states.dart';
 import 'package:admin_panel_medlab/models/order_model.dart';
+import 'package:admin_panel_medlab/view/message/message_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // Import your Order BLoC, Events, States, and Order Model
@@ -432,6 +433,19 @@ class OrderDataSource extends DataTableSource {
                   tooltip: 'View Details',
                   onPressed: () {
                     _showOrderDetailsDialog(context, order);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.message, color: Colors.green),
+                  tooltip: 'Send Message',
+                  onPressed: () {
+                    // push MessageScreen
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            MessageScreen(userId: order.userId),
+                      ),
+                    );
                   },
                 ),
                 IconButton(

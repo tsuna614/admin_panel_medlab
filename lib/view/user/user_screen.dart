@@ -2,6 +2,7 @@ import 'package:admin_panel_medlab/bloc/user-bloc/user_bloc.dart';
 import 'package:admin_panel_medlab/bloc/user-bloc/user_events.dart';
 import 'package:admin_panel_medlab/bloc/user-bloc/user_states.dart';
 import 'package:admin_panel_medlab/models/user_model.dart';
+import 'package:admin_panel_medlab/view/message/message_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -347,6 +348,18 @@ class UserDataDataSource extends DataTableSource {
                   tooltip: 'View Details',
                   onPressed: () {
                     _showUserDetailsDialog(context, user);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.message, color: Colors.green),
+                  tooltip: 'Send Message',
+                  onPressed: () {
+                    // push MessageScreen
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MessageScreen(userId: user.id),
+                      ),
+                    );
                   },
                 ),
               ],
